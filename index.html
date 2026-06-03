@@ -157,6 +157,9 @@
           <div class="row native" role="row">
             <span>Docker</span><span>BuildKit control</span><span>11s</span><span>3s</span><span>use BuildKit cache</span>
           </div>
+          <div class="row native" role="row">
+            <span>Docker</span><span>moby/buildkit warm retry</span><span>cold stream issue</span><span>2s warm</span><span>use a controlled BuildKit demo</span>
+          </div>
         </div>
       </section>
 
@@ -228,8 +231,14 @@
         <ol>
           <li><b>C++ flagship:</b> DuckDB or RocksDB for the 18x restored-cache win.</li>
           <li><b>Rust CI:</b> Tokio for fresh runner, full test, and touched-source variants.</li>
-          <li><b>Native-cache contrast:</b> Go or Docker to show when IB is not the right layer.</li>
+          <li><b>Native-cache contrast:</b> Go and Docker to show when IB is not the right layer.</li>
         </ol>
+        <p>
+          Docker is now clearer: Alpine TLS no longer reproduces, BuildKit cache
+          works, and the remaining issue is the full upstream `moby/buildkit`
+          cold build hitting a stream error. Use a controlled app Dockerfile for
+          the Docker cache demo.
+        </p>
       </section>
     </main>
 

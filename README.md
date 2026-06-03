@@ -38,6 +38,11 @@ This is not a universal "IB beats every cache" story. It is a practical
 comparison: C/C++ and Rust are strong Incredibuild candidates; Go, Docker, and
 JavaScript usually want native/tool-specific caches first.
 
+Docker note: BuildKit cache is the right Docker acceleration layer. Alpine TLS
+no longer reproduces in the Islo sandbox; the full upstream `moby/buildkit` cold
+Dockerfile still hits a BuildKit stream issue, so the demo should use a
+controlled app Dockerfile.
+
 ## Links
 
 - GitHub Actions: https://docs.github.com/en/actions
