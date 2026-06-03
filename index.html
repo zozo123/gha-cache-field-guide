@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CI Cache MVP — GitHub Actions, Incredibuild, and Islo</title>
+    <meta
+      name="description"
+      content="A technical field guide for accelerating GitHub Actions with native caches, Incredibuild Build Cache, BuildKit, and Islo disposable runners."
+    />
+    <meta property="og:title" content="CI Cache MVP" />
+    <meta
+      property="og:description"
+      content="Where native caches win, where Incredibuild's proprietary compiler cache wins, and how disposable Islo runners change the CI cache problem."
+    />
+    <meta property="og:type" content="website" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="noise"></div>
+    <header class="hero">
+      <nav class="nav" aria-label="Primary">
+        <a href="#stack">stack</a>
+        <a href="#benchmarks">benchmarks</a>
+        <a href="#decision">decision</a>
+        <a href="#runners">runners</a>
+      </nav>
+
+      <p class="eyebrow">MVP POC · GitHub Actions acceleration</p>
+      <h1>Fresh CI runners should not rebuild the world.</h1>
+      <p class="lede">
+        This is a small MVP POC for understanding where CI cache layers help.
+        Native caches are unbeatable when the same workspace is already warm.
+        <a href="https://www.incredibuild.com/" target="_blank" rel="noreferrer">Incredibuild</a>
+        is strongest when runners are fresh, ephemeral, or invalidated by dirty
+        timestamps, because its proprietary Build Cache reuses compiler artifacts
+        across jobs. <a href="https://islo.dev" target="_blank" rel="noreferrer">Islo</a>
+        supplies disposable runner infrastructure.
+      </p>
+
+      <div class="hero-grid" aria-label="headline benchmark cards">
+        <article>
+          <span class="card-kicker">C++ flagship</span>
+          <strong>RocksDB</strong>
+          <code>263s → 14s</code>
+          <small>18.8x with restored IB cache</small>
+        </article>
+        <article>
+          <span class="card-kicker">Rust CI story</span>
+          <strong>Tokio</strong>
+          <code>46s → 13s</code>
+          <small>fresh GitHub runner made warm</small>
+        </article>
+        <article>
+          <span class="card-kicker">native vs IB</span>
+          <strong>touch test</strong>
+          <code>38s → 13s</code>
+          <small>dirty mtimes, same content</small>
+        </article>
+      </div>
+    </header>
+
+    <main>
+      <section id="stack" class="section split">
+        <div>
+          <p class="eyebrow">the model</p>
+          <h2>Pick the cache that matches the invalidation.</h2>
+          <p>
+            Dependency downloads, compiler outputs, container layers, and test
+            execution are different problems. One cache does not solve all of CI.
+          </p>
+        </div>
+        <div class="ladder">
+          <div><b>1</b><span>dependency cache</span><small>npm, Cargo registry, Maven .m2, Go modules</small></div>
+          <div><b>2</b><span>native build cache</span><small>Cargo target, GOCACHE, Gradle cache, tsbuildinfo</small></div>
+          <div><b>3</b><span>compiler artifact cache</span><small>Incredibuild proprietary Build Cache</small></div>
+          <div><b>4</b><span>container cache</span><small>BuildKit cache-from/cache-to</small></div>
+          <div><b>5</b><span>test strategy</span><small>sharding, selective tests, retries</small></div>
+        </div>
+      </section>
+
+      <section class="section thesis">
+        <p class="eyebrow">the rule</p>
+        <h2>Native warm state wins locally. IB helps when warm state disappears.</h2>
+        <div class="thesis-grid">
+          <article>
+            <h3>Native cache</h3>
+            <p>Best when the same machine keeps its build directory and nothing changes.</p>
+            <code>Tokio Cargo warm: ~0s</code>
+          </article>
+          <article>
+            <h3>Incredibuild Build Cache</h3>
+            <p>Best when a fresh runner can restore content-addressed compiler work.</p>
+            <code>Tokio IB restored: 13s</code>
+          </article>
+          <article>
+            <h3>Touch invalidation</h3>
+            <p>When mtimes are dirty but contents are identical, native rebuilds; IB reuses.</p>
+            <code>Cargo touch: 38s · IB touch: 13s</code>
+          </article>
+        </div>
+      </section>
+
+      <section id="benchmarks" class="section">
+        <div class="section-title">
+          <p class="eyebrow">measured evidence</p>
+          <h2>POC numbers that shaped the story.</h2>
+        </div>
+        <div class="benchmark-table" role="table" aria-label="benchmark results">
+          <div class="row head" role="row">
+            <span>ecosystem</span><span>project / scenario</span><span>baseline</span><span>accelerated</span><span>read</span>
+          </div>
+          <div class="row win" role="row">
+            <span>C++</span><span>facebook/rocksdb</span><span>263s</span><span>14s</span><span>IB flagship</span>
+          </div>
+          <div class="row win" role="row">
+            <span>C++</span><span>duckdb/duckdb</span><span>293s</span><span>16s</span><span>IB flagship</span>
+          </div>
+          <div class="row win" role="row">
+            <span>C++</span><span>llama.cpp</span><span>131s</span><span>13s</span><span>IB strong</span>
+          </div>
+          <div class="row win" role="row">
+            <span>Rust</span><span>tokio compile</span><span>46s</span><span>13s</span><span>IB strong</span>
+          </div>
+          <div class="row win" role="row">
+            <span>Rust</span><span>tokio full test</span><span>75s</span><span>43s</span><span>IB helps compile slice</span>
+          </div>
+          <div class="row win" role="row">
+            <span>Rust</span><span>tokio after touch</span><span>Cargo 38s</span><span>IB 13s</span><span>best native-vs-IB proof</span>
+          </div>
+          <div class="row maybe" role="row">
+            <span>Java</span><span>Maven forked javac XL</span><span>15s</span><span>9s</span><span>selective candidate</span>
+          </div>
+          <div class="row native" role="row">
+            <span>Go</span><span>nektos/act</span><span>34s</span><span>0s native</span><span>use GOCACHE</span>
+          </div>
+          <div class="row native" role="row">
+            <span>JS/TS</span><span>TypeScript compiler</span><span>6s</span><span>4s native</span><span>use tool cache</span>
+          </div>
+          <div class="row native" role="row">
+            <span>Docker</span><span>BuildKit control</span><span>11s</span><span>3s</span><span>use BuildKit cache</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="decision" class="section split">
+        <div>
+          <p class="eyebrow">decision</p>
+          <h2>What should this workflow cache?</h2>
+          <p>Pick the workload shape. The answer should change by ecosystem.</p>
+          <div class="controls" aria-label="cache decision controls">
+            <label>
+              Language
+              <select id="language">
+                <option value="cpp">C / C++</option>
+                <option value="rust">Rust</option>
+                <option value="java">Java</option>
+                <option value="go">Go</option>
+                <option value="js">JavaScript / TypeScript</option>
+                <option value="docker">Docker</option>
+              </select>
+            </label>
+            <label>
+              Runner state
+              <select id="runnerState">
+                <option value="fresh">fresh / ephemeral</option>
+                <option value="warm">same workspace is warm</option>
+                <option value="dirty">warm but sources were touched</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <aside class="verdict" aria-live="polite">
+          <p class="eyebrow">recommended layer</p>
+          <h3 id="verdictTitle">IB Build Cache</h3>
+          <p id="verdictText">
+            Heavy compiler work on a fresh C/C++ runner is the strongest measured
+            fit for Incredibuild Build Cache.
+          </p>
+        </aside>
+      </section>
+
+      <section id="runners" class="section runners">
+        <p class="eyebrow">runner context</p>
+        <h2>Faster runners still need the right cache.</h2>
+        <div class="pipeline">
+          <span>GitHub job</span>
+          <i></i>
+          <span>Islo runner</span>
+          <i></i>
+          <span>IB cache restore</span>
+          <i></i>
+          <span>compiler build</span>
+          <i></i>
+          <span>cache save</span>
+        </div>
+        <p>
+          Whether you use <a href="https://docs.github.com/en/actions" target="_blank" rel="noreferrer">GitHub Actions</a>,
+          faster hosted runners such as <a href="https://www.blacksmith.sh/" target="_blank" rel="noreferrer">Blacksmith</a>,
+          or disposable runners on <a href="https://islo.dev" target="_blank" rel="noreferrer">Islo</a>,
+          the question is the same: what state is worth restoring into a clean
+          machine? Dependencies, native build state, BuildKit layers, and
+          <a href="https://www.incredibuild.com/" target="_blank" rel="noreferrer">Incredibuild</a>
+          compiler artifacts answer different parts of the job.
+        </p>
+      </section>
+
+      <section class="section final">
+        <p class="eyebrow">POC demo set</p>
+        <h2>Show three stories, not one claim.</h2>
+        <ol>
+          <li><b>C++ flagship:</b> DuckDB or RocksDB for the 18x restored-cache win.</li>
+          <li><b>Rust CI:</b> Tokio for fresh runner, full test, and touched-source variants.</li>
+          <li><b>Native-cache contrast:</b> Go or Docker to show when IB is not the right layer.</li>
+        </ol>
+      </section>
+    </main>
+
+    <footer>
+      <span>MVP POC for CI cache strategy.</span>
+      <a href="https://www.incredibuild.com/" target="_blank" rel="noreferrer">Incredibuild</a>
+      <a href="https://islo.dev" target="_blank" rel="noreferrer">islo.dev</a>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

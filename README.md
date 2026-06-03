@@ -1,0 +1,47 @@
+# CI Cache MVP
+
+Concise MVP POC microsite for explaining how to accelerate GitHub Actions across
+cache layers:
+
+- native dependency/build caches,
+- Incredibuild's proprietary Build Cache,
+- BuildKit cache,
+- disposable Islo runners.
+
+The site is intentionally static so it can be published with GitHub Pages without
+a build step.
+
+## Run Locally
+
+```bash
+python3 -m http.server 8080
+```
+
+Then open:
+
+```text
+http://localhost:8080
+```
+
+## Publish
+
+Push this repo to GitHub and enable Pages from the repository root, or serve the
+folder from any static host.
+
+## Message
+
+Native caches are best when the same workspace is already warm. Incredibuild
+Build Cache is strongest when GitHub Actions runners are fresh, ephemeral, or
+invalidated by timestamp churn, because it restores compiler artifacts across
+jobs and runners.
+
+This is not a universal "IB beats every cache" story. It is a practical map:
+C/C++ and Rust are strong IB candidates; Go, Docker, and JavaScript usually want
+native/tool-specific caches first.
+
+## Links
+
+- GitHub Actions: https://docs.github.com/en/actions
+- Blacksmith: https://www.blacksmith.sh/
+- Incredibuild: https://www.incredibuild.com/
+- Islo: https://islo.dev
