@@ -29,7 +29,7 @@
       <p class="eyebrow">MVP POC · GitHub Actions acceleration</p>
       <h1>Fresh CI runners should not rebuild the world.</h1>
       <p class="lede">
-        This is a small MVP POC for understanding where CI cache layers help.
+        This is a small MVP POC for choosing the right GitHub Actions cache.
         Native caches are unbeatable when the same workspace is already warm.
         <a href="https://www.incredibuild.com/solutions/ci-cd-acceleration" target="_blank" rel="noreferrer">Incredibuild CI/CD acceleration</a>
         is strongest when runners are fresh, ephemeral, or invalidated by dirty
@@ -61,21 +61,38 @@
     </header>
 
     <main>
-      <section id="stack" class="section split">
+      <section id="stack" class="section">
         <div>
-          <p class="eyebrow">the model</p>
-          <h2>Pick the cache that matches the invalidation.</h2>
+          <p class="eyebrow">what to use when</p>
+          <h2>The honest comparison.</h2>
           <p>
-            Dependency downloads, compiler outputs, container layers, and test
-            execution are different problems. One cache does not solve all of CI.
+            The useful question is not "which cache is best?" It is "what got
+            invalidated?" Incredibuild is compelling when compiler work is the
+            expensive part and the runner starts clean.
           </p>
         </div>
-        <div class="ladder">
-          <div><b>1</b><span>dependency cache</span><small>npm, Cargo registry, Maven .m2, Go modules</small></div>
-          <div><b>2</b><span>native build cache</span><small>Cargo target, GOCACHE, Gradle cache, tsbuildinfo</small></div>
-          <div><b>3</b><span>compiler artifact cache</span><small>Incredibuild proprietary Build Cache</small></div>
-          <div><b>4</b><span>container cache</span><small>BuildKit cache-from/cache-to</small></div>
-          <div><b>5</b><span>test strategy</span><small>sharding, selective tests, retries</small></div>
+        <div class="use-table" role="table" aria-label="what cache to use when">
+          <div class="use-row head" role="row">
+            <span>Situation</span><span>Use first</span><span>Why</span>
+          </div>
+          <div class="use-row ib" role="row">
+            <span>Fresh C/C++ or Rust runner</span><span>Incredibuild Build Cache</span><span>Restores compiler artifacts into a clean job.</span>
+          </div>
+          <div class="use-row native" role="row">
+            <span>Same workspace, no source changes</span><span>Native build cache</span><span>Nothing beats a hot local `target/`, `GOCACHE`, or incremental state.</span>
+          </div>
+          <div class="use-row ib" role="row">
+            <span>Warm workspace, files touched</span><span>Incredibuild Build Cache</span><span>Dirty mtimes force native rebuilds; content-identical compiler work can still be reused.</span>
+          </div>
+          <div class="use-row native" role="row">
+            <span>Go builds</span><span>`GOCACHE` + `GOMODCACHE`</span><span>Go already has the right content-aware cache.</span>
+          </div>
+          <div class="use-row native" role="row">
+            <span>Docker image builds</span><span>BuildKit cache</span><span>Layer reuse is the real accelerator.</span>
+          </div>
+          <div class="use-row native" role="row">
+            <span>JS / TypeScript</span><span>npm/pnpm + `.tsbuildinfo` + bundler cache</span><span>Tool-native caches beat generic compiler-cache claims here.</span>
+          </div>
         </div>
       </section>
 

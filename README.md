@@ -1,12 +1,11 @@
 # CI Caching Is Not One Cache
 
-Concise MVP POC microsite for explaining how to accelerate GitHub Actions across
-cache layers:
+Concise MVP POC microsite comparing what to use when accelerating GitHub Actions:
 
-- native dependency/build caches,
-- Incredibuild's proprietary Build Cache / CI-CD acceleration,
-- BuildKit cache,
-- disposable Islo runners.
+- native dependency/build caches for already-warm state,
+- Incredibuild's proprietary Build Cache / CI-CD acceleration for fresh or dirty compiler work,
+- BuildKit cache for Docker,
+- disposable Islo runners as the clean-runner substrate.
 
 The site is intentionally static so it can be published with GitHub Pages without
 a build step.
@@ -35,9 +34,9 @@ Build Cache is strongest when GitHub Actions runners are fresh, ephemeral, or
 invalidated by timestamp churn, because it restores compiler artifacts across
 jobs and runners.
 
-This is not a universal "IB beats every cache" story. It is a practical map:
-C/C++ and Rust are strong IB candidates; Go, Docker, and JavaScript usually want
-native/tool-specific caches first.
+This is not a universal "IB beats every cache" story. It is a practical
+comparison: C/C++ and Rust are strong Incredibuild candidates; Go, Docker, and
+JavaScript usually want native/tool-specific caches first.
 
 ## Links
 
