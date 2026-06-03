@@ -1,10 +1,10 @@
-# CI Cache MVP
+# CI Caching Is Not One Cache
 
 Concise MVP POC microsite for explaining how to accelerate GitHub Actions across
 cache layers:
 
 - native dependency/build caches,
-- Incredibuild's proprietary Build Cache,
+- Incredibuild's proprietary Build Cache / CI-CD acceleration,
 - BuildKit cache,
 - disposable Islo runners.
 
@@ -43,5 +43,5 @@ native/tool-specific caches first.
 
 - GitHub Actions: https://docs.github.com/en/actions
 - Blacksmith: https://www.blacksmith.sh/
-- Incredibuild: https://www.incredibuild.com/
+- Incredibuild CI/CD acceleration: https://www.incredibuild.com/solutions/ci-cd-acceleration
 - Islo: https://islo.dev

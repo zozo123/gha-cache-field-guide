@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>CI Cache MVP — GitHub Actions, Incredibuild, and Islo</title>
+    <title>CI Caching Is Not One Cache — GitHub Actions, Incredibuild, and Islo</title>
     <meta
       name="description"
-      content="A technical field guide for accelerating GitHub Actions with native caches, Incredibuild Build Cache, BuildKit, and Islo disposable runners."
+      content="A concise MVP POC about when native caches, Incredibuild CI/CD acceleration, BuildKit, and disposable Islo runners help GitHub Actions."
     />
-    <meta property="og:title" content="CI Cache MVP" />
+    <meta property="og:title" content="CI caching is not one cache" />
     <meta
       property="og:description"
       content="Where native caches win, where Incredibuild's proprietary compiler cache wins, and how disposable Islo runners change the CI cache problem."
@@ -31,7 +31,7 @@
       <p class="lede">
         This is a small MVP POC for understanding where CI cache layers help.
         Native caches are unbeatable when the same workspace is already warm.
-        <a href="https://www.incredibuild.com/" target="_blank" rel="noreferrer">Incredibuild</a>
+        <a href="https://www.incredibuild.com/solutions/ci-cd-acceleration" target="_blank" rel="noreferrer">Incredibuild CI/CD acceleration</a>
         is strongest when runners are fresh, ephemeral, or invalidated by dirty
         timestamps, because its proprietary Build Cache reuses compiler artifacts
         across jobs. <a href="https://islo.dev" target="_blank" rel="noreferrer">Islo</a>
@@ -200,7 +200,7 @@
           or disposable runners on <a href="https://islo.dev" target="_blank" rel="noreferrer">Islo</a>,
           the question is the same: what state is worth restoring into a clean
           machine? Dependencies, native build state, BuildKit layers, and
-          <a href="https://www.incredibuild.com/" target="_blank" rel="noreferrer">Incredibuild</a>
+          <a href="https://www.incredibuild.com/solutions/ci-cd-acceleration" target="_blank" rel="noreferrer">Incredibuild CI/CD acceleration</a>
           compiler artifacts answer different parts of the job.
         </p>
       </section>
@@ -218,7 +218,7 @@
 
     <footer>
       <span>MVP POC for CI cache strategy.</span>
-      <a href="https://www.incredibuild.com/" target="_blank" rel="noreferrer">Incredibuild</a>
+      <a href="https://www.incredibuild.com/solutions/ci-cd-acceleration" target="_blank" rel="noreferrer">Incredibuild CI/CD acceleration</a>
       <a href="https://islo.dev" target="_blank" rel="noreferrer">islo.dev</a>
     </footer>
 
