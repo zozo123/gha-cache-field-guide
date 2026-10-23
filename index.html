@@ -109,29 +109,47 @@
             expensive part and the runner starts clean.
           </p>
         </div>
-        <div class="use-table" role="table" aria-label="what cache to use when">
-          <div class="use-row head" role="row">
-            <span>Situation</span><span>Use first</span><span>Why</span>
-          </div>
-          <div class="use-row ib" role="row">
-            <span>Fresh C/C++ or Rust runner</span><span>Incredibuild Build Cache</span><span>Restores compiler artifacts into a clean job.</span>
-          </div>
-          <div class="use-row native" role="row">
-            <span>Same workspace, no source changes</span><span>Native build cache</span><span>A hot local <code>target/</code>, <code>GOCACHE</code>, or incremental state is usually fastest.</span>
-          </div>
-          <div class="use-row ib" role="row">
-            <span>Warm workspace, files touched</span><span>Incredibuild Build Cache</span><span>Dirty mtimes force native rebuilds; content-identical compiler work can still be reused.</span>
-          </div>
-          <div class="use-row native" role="row">
-            <span>Go builds</span><span><code>GOCACHE</code> + <code>GOMODCACHE</code></span><span>Go already has the right content-aware cache.</span>
-          </div>
-          <div class="use-row native" role="row">
-            <span>Docker image builds</span><span>BuildKit cache</span><span>Layer reuse is the real accelerator.</span>
-          </div>
-          <div class="use-row native" role="row">
-            <span>JS / TypeScript</span><span>npm/pnpm + <code>.tsbuildinfo</code> + bundler cache</span><span>Tool-native caches beat generic compiler-cache claims here.</span>
-          </div>
-        </div>
+        <table class="use-table" aria-label="what cache to use when">
+          <thead>
+            <tr>
+              <th scope="col">Situation</th>
+              <th scope="col">Use first</th>
+              <th scope="col">Why</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="ib">
+              <td>Fresh C/C++ or Rust runner</td>
+              <td>Incredibuild Build Cache</td>
+              <td>Restores compiler artifacts into a clean job.</td>
+            </tr>
+            <tr class="native">
+              <td>Same workspace, no source changes</td>
+              <td>Native build cache</td>
+              <td>A hot local <code>target/</code>, <code>GOCACHE</code>, or incremental state is usually fastest.</td>
+            </tr>
+            <tr class="ib">
+              <td>Warm workspace, files touched</td>
+              <td>Incredibuild Build Cache</td>
+              <td>Dirty mtimes force native rebuilds; content-identical compiler work can still be reused.</td>
+            </tr>
+            <tr class="native">
+              <td>Go builds</td>
+              <td><code>GOCACHE</code> + <code>GOMODCACHE</code></td>
+              <td>Go already has the right content-aware cache.</td>
+            </tr>
+            <tr class="native">
+              <td>Docker image builds</td>
+              <td>BuildKit cache</td>
+              <td>Layer reuse is the real accelerator.</td>
+            </tr>
+            <tr class="native">
+              <td>JS / TypeScript</td>
+              <td>npm/pnpm + <code>.tsbuildinfo</code> + bundler cache</td>
+              <td>Tool-native caches beat generic compiler-cache claims here.</td>
+            </tr>
+          </tbody>
+        </table>
       </section>
 
       <section class="section thesis">
@@ -165,44 +183,96 @@
             and logs are not published here, so treat the numbers as indicative.
           </p>
         </div>
-        <div class="benchmark-table" role="table" aria-label="POC timings">
-          <div class="row head" role="row">
-            <span>ecosystem</span><span>project / scenario</span><span>baseline</span><span>accelerated</span><span>read</span>
-          </div>
-          <div class="row win" role="row">
-            <span>C++</span><span>facebook/rocksdb</span><span>263s</span><span>14s</span><span>large IB win</span>
-          </div>
-          <div class="row win" role="row">
-            <span>C++</span><span>duckdb/duckdb</span><span>293s</span><span>16s</span><span>large IB win</span>
-          </div>
-          <div class="row win" role="row">
-            <span>C++</span><span>llama.cpp</span><span>131s</span><span>13s</span><span>IB strong</span>
-          </div>
-          <div class="row win" role="row">
-            <span>Rust</span><span>tokio compile</span><span>46s</span><span>13s</span><span>IB strong</span>
-          </div>
-          <div class="row win" role="row">
-            <span>Rust</span><span>tokio full test</span><span>75s</span><span>43s</span><span>IB helps compile slice</span>
-          </div>
-          <div class="row win" role="row">
-            <span>Rust</span><span>tokio after touch</span><span>Cargo 38s</span><span>IB 13s</span><span>clearest native-vs-IB contrast</span>
-          </div>
-          <div class="row maybe" role="row">
-            <span>Java</span><span>Maven forked javac XL</span><span>15s</span><span>9s</span><span>selective candidate</span>
-          </div>
-          <div class="row native" role="row">
-            <span>Go</span><span>nektos/act</span><span>34s</span><span>0s native</span><span>use GOCACHE</span>
-          </div>
-          <div class="row native" role="row">
-            <span>JS/TS</span><span>TypeScript compiler</span><span>6s</span><span>4s native</span><span>use tool cache</span>
-          </div>
-          <div class="row native" role="row">
-            <span>Docker</span><span>BuildKit control</span><span>11s</span><span>3s</span><span>use BuildKit cache</span>
-          </div>
-          <div class="row native" role="row">
-            <span>Docker</span><span>moby/buildkit warm retry</span><span>cold stream issue</span><span>2s warm</span><span>use BuildKit cache</span>
-          </div>
-        </div>
+        <table class="benchmark-table" aria-label="POC timings">
+          <thead>
+            <tr>
+              <th scope="col">ecosystem</th>
+              <th scope="col">project / scenario</th>
+              <th scope="col">baseline</th>
+              <th scope="col">accelerated</th>
+              <th scope="col">read</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="win">
+              <td>C++</td>
+              <td>facebook/rocksdb</td>
+              <td>263s</td>
+              <td>14s</td>
+              <td>large IB win</td>
+            </tr>
+            <tr class="win">
+              <td>C++</td>
+              <td>duckdb/duckdb</td>
+              <td>293s</td>
+              <td>16s</td>
+              <td>large IB win</td>
+            </tr>
+            <tr class="win">
+              <td>C++</td>
+              <td>llama.cpp</td>
+              <td>131s</td>
+              <td>13s</td>
+              <td>IB strong</td>
+            </tr>
+            <tr class="win">
+              <td>Rust</td>
+              <td>tokio compile</td>
+              <td>46s</td>
+              <td>13s</td>
+              <td>IB strong</td>
+            </tr>
+            <tr class="win">
+              <td>Rust</td>
+              <td>tokio full test</td>
+              <td>75s</td>
+              <td>43s</td>
+              <td>IB helps compile slice</td>
+            </tr>
+            <tr class="win">
+              <td>Rust</td>
+              <td>tokio after touch</td>
+              <td>Cargo 38s</td>
+              <td>IB 13s</td>
+              <td>clearest native-vs-IB contrast</td>
+            </tr>
+            <tr class="maybe">
+              <td>Java</td>
+              <td>Maven forked javac XL</td>
+              <td>15s</td>
+              <td>9s</td>
+              <td>selective candidate</td>
+            </tr>
+            <tr class="native">
+              <td>Go</td>
+              <td>nektos/act</td>
+              <td>34s</td>
+              <td>0s native</td>
+              <td>use GOCACHE</td>
+            </tr>
+            <tr class="native">
+              <td>JS/TS</td>
+              <td>TypeScript compiler</td>
+              <td>6s</td>
+              <td>4s native</td>
+              <td>use tool cache</td>
+            </tr>
+            <tr class="native">
+              <td>Docker</td>
+              <td>BuildKit control</td>
+              <td>11s</td>
+              <td>3s</td>
+              <td>use BuildKit cache</td>
+            </tr>
+            <tr class="native">
+              <td>Docker</td>
+              <td>moby/buildkit warm retry</td>
+              <td>cold stream issue</td>
+              <td>2s warm</td>
+              <td>use BuildKit cache</td>
+            </tr>
+          </tbody>
+        </table>
       </section>
 
       <section id="decision" class="section split">
