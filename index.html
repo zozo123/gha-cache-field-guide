@@ -65,8 +65,8 @@
         By <a href="https://zozo123.github.io/">Yossi Eliaz</a> · Principal Engineer, AI Systems at Incredibuild / islo.dev
       </p>
       <p class="lede">
-        This POC compares cache layers for GitHub Actions. In its runs, a restored
-        <a href="https://www.incredibuild.com/solutions/ci-cd-acceleration" target="_blank" rel="noreferrer">Incredibuild Build Cache</a>
+        This POC compares cache layers for GitHub Actions. In its runs, restoring
+        <a href="https://www.incredibuild.com/solutions/ci-cd-acceleration" target="_blank" rel="noreferrer">Incredibuild's proprietary Build Cache</a>
         cut a RocksDB build from 263s to 14s and a touched-source Tokio
         build from 38s to 13s, while Go, JavaScript and Docker were
         better served by GOCACHE, tool-native caches and BuildKit. Native caches
@@ -271,11 +271,12 @@
         <p class="eyebrow">limits</p>
         <h2>What this POC does not show</h2>
         <p>
-          Go, JavaScript/TypeScript and Docker builds gained little or nothing
-          from Incredibuild here; use <code>GOCACHE</code>/<code>GOMODCACHE</code>,
-          tool-native caches and BuildKit. A cold build of upstream
-          <code>moby/buildkit</code> hit a BuildKit stream error, so the Docker
-          numbers use a small controlled Dockerfile.
+          Go and JavaScript/TypeScript builds showed little or no Incredibuild
+          benefit here, and Docker speedups came from BuildKit layers, not compiler
+          artifacts; use <code>GOCACHE</code>/<code>GOMODCACHE</code>, tool-native
+          caches and BuildKit. A cold build of the full upstream
+          <code>moby/buildkit</code> Dockerfile hit a BuildKit stream error, so
+          only its warm retry is shown, next to a separate BuildKit control build.
         </p>
       </section>
     </main>

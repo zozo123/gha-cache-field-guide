@@ -44,7 +44,7 @@ JavaScript usually want native/tool-specific caches first.
 
 Docker note: BuildKit cache is the right Docker acceleration layer. A cold build
 of the full upstream `moby/buildkit` Dockerfile hit a BuildKit stream error, so
-the Docker numbers use a small controlled Dockerfile.
+the page shows only its warm retry, next to a separate BuildKit control build.
 
 ## Links
 
