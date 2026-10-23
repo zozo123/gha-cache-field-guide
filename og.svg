@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="glowGreen" cx="10%" cy="8%" r="55%">
+      <stop offset="0" stop-color="#a7ff6b" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#a7ff6b" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowBlue" cx="92%" cy="22%" r="50%">
+      <stop offset="0" stop-color="#8ed8ff" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#8ed8ff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="base" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0e100c"/>
+      <stop offset="0.42" stop-color="#14150f"/>
+      <stop offset="1" stop-color="#0a0b09"/>
+    </linearGradient>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M28 0H0V28" fill="none" stroke="#ffffff" stroke-opacity="0.035" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#base)"/>
+  <rect width="1200" height="630" fill="url(#glowGreen)"/>
+  <rect width="1200" height="630" fill="url(#glowBlue)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <text x="72" y="104" fill="#a7ff6b" font-family="Menlo, ui-monospace, monospace" font-size="20" font-weight="700" letter-spacing="3.6">POC · JUNE 2026 · GITHUB ACTIONS ACCELERATION</text>
+
+  <text fill="#f0ead8" font-family="Georgia, 'Times New Roman', serif" font-size="104" font-weight="700" letter-spacing="-6">
+    <tspan x="66" y="232">CI caching is not</tspan>
+    <tspan x="66" y="330">one cache.</tspan>
+  </text>
+
+  <text x="72" y="398" fill="#b9b09b" font-family="Menlo, ui-monospace, monospace" font-size="26">A GitHub Actions POC: what to restore on fresh,</text>
+  <text x="72" y="436" fill="#b9b09b" font-family="Menlo, ui-monospace, monospace" font-size="26">warm, or touched runners.</text>
+
+  <g font-family="Menlo, ui-monospace, monospace" font-size="20">
+    <rect x="72" y="472" width="196" height="46" fill="#191b16" stroke="#f0ead8" stroke-opacity="0.18"/>
+    <text x="170" y="502" fill="#8ed8ff" text-anchor="middle">native cache</text>
+    <rect x="290" y="472" width="152" height="46" fill="#191b16" stroke="#f0ead8" stroke-opacity="0.18"/>
+    <text x="366" y="502" fill="#8ed8ff" text-anchor="middle">BuildKit</text>
+    <rect x="464" y="472" width="232" height="46" fill="#191b16" stroke="#f0ead8" stroke-opacity="0.18"/>
+    <text x="580" y="502" fill="#a7ff6b" text-anchor="middle">IB Build Cache</text>
+  </g>
+
+  <line x1="72" y1="556" x2="1128" y2="556" stroke="#f0ead8" stroke-opacity="0.15"/>
+  <text x="72" y="596" fill="#f0ead8" font-family="Georgia, 'Times New Roman', serif" font-size="30" font-weight="700">Yossi Eliaz</text>
+  <text x="1128" y="594" fill="#9a9282" font-family="Menlo, ui-monospace, monospace" font-size="18" text-anchor="end">zozo123.github.io/gha-cache-field-guide</text>
+</svg>

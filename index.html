@@ -1,52 +1,87 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>CI Caching Is Not One Cache — GitHub Actions, Incredibuild, and Islo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CI Caching Is Not One Cache (POC) | Yossi Eliaz</title>
     <meta
       name="description"
-      content="A concise MVP POC about when native caches, Incredibuild CI/CD acceleration, BuildKit, and disposable Islo runners help GitHub Actions."
-    />
-    <meta property="og:title" content="CI caching is not one cache" />
+      content="POC by Yossi Eliaz: when native caches, BuildKit, or Incredibuild Build Cache help GitHub Actions on fresh, warm, or touched runners, with POC timings."
+    >
+    <meta name="author" content="Yossi Eliaz">
+    <link rel="canonical" href="https://zozo123.github.io/gha-cache-field-guide/">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Yossi Eliaz">
+    <meta property="og:title" content="CI caching is not one cache: a GitHub Actions POC">
     <meta
       property="og:description"
-      content="Where native caches win, where Incredibuild's proprietary compiler cache wins, and how disposable Islo runners change the CI cache problem."
-    />
-    <meta property="og:type" content="website" />
-    <link rel="stylesheet" href="styles.css" />
+      content="A June 2026 POC by Yossi Eliaz: when native caches, BuildKit, or Incredibuild Build Cache speed up GitHub Actions on fresh, warm, or touched runners."
+    >
+    <meta property="og:url" content="https://zozo123.github.io/gha-cache-field-guide/">
+    <meta property="og:image" content="https://zozo123.github.io/gha-cache-field-guide/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="CI caching is not one cache: a GitHub Actions POC by Yossi Eliaz, June 2026">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="CI caching is not one cache: a GitHub Actions POC">
+    <meta
+      name="twitter:description"
+      content="A June 2026 POC by Yossi Eliaz: when native caches, BuildKit, or Incredibuild Build Cache speed up GitHub Actions on fresh, warm, or touched runners."
+    >
+    <meta name="twitter:image" content="https://zozo123.github.io/gha-cache-field-guide/og.png">
+    <link rel="stylesheet" href="styles.css">
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "CI caching is not one cache",
+        "description": "POC comparing native caches, BuildKit, and Incredibuild Build Cache for GitHub Actions on fresh, warm, and touched runners.",
+        "url": "https://zozo123.github.io/gha-cache-field-guide/",
+        "image": "https://zozo123.github.io/gha-cache-field-guide/og.png",
+        "datePublished": "2026-06-03",
+        "dateModified": "2026-10-22",
+        "author": {
+          "@type": "Person",
+          "name": "Yossi Eliaz",
+          "url": "https://yossieliaz.netlify.app/",
+          "sameAs": ["https://github.com/zozo123", "https://www.linkedin.com/in/yossi-eliaz/"]
+        }
+      }
+    </script>
   </head>
   <body>
     <div class="noise"></div>
     <header class="hero">
       <nav class="nav" aria-label="Primary">
         <a href="#stack">stack</a>
-        <a href="#benchmarks">benchmarks</a>
+        <a href="#benchmarks">timings</a>
         <a href="#decision">decision</a>
         <a href="#runners">runners</a>
       </nav>
 
-      <p class="eyebrow">MVP POC · GitHub Actions acceleration</p>
+      <p class="eyebrow">POC · June 2026 · GitHub Actions acceleration</p>
       <h1>Fresh CI runners should not rebuild the world.</h1>
+      <p class="byline">
+        By <a href="https://zozo123.github.io/">Yossi Eliaz</a> · Principal Engineer, AI Systems at Incredibuild / islo.dev
+      </p>
       <p class="lede">
-        This is a small MVP POC for choosing the right GitHub Actions cache.
-        Native caches are unbeatable when the same workspace is already warm.
-        <a href="https://www.incredibuild.com/solutions/ci-cd-acceleration" target="_blank" rel="noreferrer">Incredibuild CI/CD acceleration</a>
-        is strongest when runners are fresh, ephemeral, or invalidated by dirty
-        timestamps, because its proprietary Build Cache reuses compiler artifacts
-        across jobs. <a href="https://islo.dev" target="_blank" rel="noreferrer">Islo</a>
-        supplies disposable runner infrastructure.
+        This POC compares cache layers for GitHub Actions. In its runs, a restored
+        <a href="https://www.incredibuild.com/solutions/ci-cd-acceleration" target="_blank" rel="noreferrer">Incredibuild Build Cache</a>
+        cut a RocksDB build from 263s to 14s and a touched-source Tokio
+        build from 38s to 13s, while Go, JavaScript and Docker were
+        better served by GOCACHE, tool-native caches and BuildKit. Native caches
+        are usually the fastest option when the same workspace is already warm.
       </p>
 
-      <div class="hero-grid" aria-label="headline benchmark cards">
+      <div class="hero-grid" role="group" aria-label="headline POC timings">
         <article>
-          <span class="card-kicker">C++ flagship</span>
+          <span class="card-kicker">C++ · fresh runner</span>
           <strong>RocksDB</strong>
           <code>263s → 14s</code>
           <small>18.8x with restored IB cache</small>
         </article>
         <article>
-          <span class="card-kicker">Rust CI story</span>
+          <span class="card-kicker">Rust · fresh runner</span>
           <strong>Tokio</strong>
           <code>46s → 13s</code>
           <small>fresh GitHub runner made warm</small>
@@ -58,6 +93,9 @@
           <small>dirty mtimes, same content</small>
         </article>
       </div>
+      <p class="hero-note">
+        POC timings, not a controlled benchmark. <a href="#benchmarks">Read the method note.</a>
+      </p>
     </header>
 
     <main>
@@ -79,19 +117,19 @@
             <span>Fresh C/C++ or Rust runner</span><span>Incredibuild Build Cache</span><span>Restores compiler artifacts into a clean job.</span>
           </div>
           <div class="use-row native" role="row">
-            <span>Same workspace, no source changes</span><span>Native build cache</span><span>Nothing beats a hot local `target/`, `GOCACHE`, or incremental state.</span>
+            <span>Same workspace, no source changes</span><span>Native build cache</span><span>A hot local <code>target/</code>, <code>GOCACHE</code>, or incremental state is usually fastest.</span>
           </div>
           <div class="use-row ib" role="row">
             <span>Warm workspace, files touched</span><span>Incredibuild Build Cache</span><span>Dirty mtimes force native rebuilds; content-identical compiler work can still be reused.</span>
           </div>
           <div class="use-row native" role="row">
-            <span>Go builds</span><span>`GOCACHE` + `GOMODCACHE`</span><span>Go already has the right content-aware cache.</span>
+            <span>Go builds</span><span><code>GOCACHE</code> + <code>GOMODCACHE</code></span><span>Go already has the right content-aware cache.</span>
           </div>
           <div class="use-row native" role="row">
             <span>Docker image builds</span><span>BuildKit cache</span><span>Layer reuse is the real accelerator.</span>
           </div>
           <div class="use-row native" role="row">
-            <span>JS / TypeScript</span><span>npm/pnpm + `.tsbuildinfo` + bundler cache</span><span>Tool-native caches beat generic compiler-cache claims here.</span>
+            <span>JS / TypeScript</span><span>npm/pnpm + <code>.tsbuildinfo</code> + bundler cache</span><span>Tool-native caches beat generic compiler-cache claims here.</span>
           </div>
         </div>
       </section>
@@ -120,18 +158,22 @@
 
       <section id="benchmarks" class="section">
         <div class="section-title">
-          <p class="eyebrow">measured evidence</p>
-          <h2>POC numbers that shaped the story.</h2>
+          <p class="eyebrow">measured in this POC</p>
+          <h2>POC timings (not a controlled benchmark)</h2>
+          <p class="method">
+            Timings from a June 2026 POC by Yossi Eliaz. Runner type, run count
+            and logs are not published here, so treat the numbers as indicative.
+          </p>
         </div>
-        <div class="benchmark-table" role="table" aria-label="benchmark results">
+        <div class="benchmark-table" role="table" aria-label="POC timings">
           <div class="row head" role="row">
             <span>ecosystem</span><span>project / scenario</span><span>baseline</span><span>accelerated</span><span>read</span>
           </div>
           <div class="row win" role="row">
-            <span>C++</span><span>facebook/rocksdb</span><span>263s</span><span>14s</span><span>IB flagship</span>
+            <span>C++</span><span>facebook/rocksdb</span><span>263s</span><span>14s</span><span>large IB win</span>
           </div>
           <div class="row win" role="row">
-            <span>C++</span><span>duckdb/duckdb</span><span>293s</span><span>16s</span><span>IB flagship</span>
+            <span>C++</span><span>duckdb/duckdb</span><span>293s</span><span>16s</span><span>large IB win</span>
           </div>
           <div class="row win" role="row">
             <span>C++</span><span>llama.cpp</span><span>131s</span><span>13s</span><span>IB strong</span>
@@ -143,7 +185,7 @@
             <span>Rust</span><span>tokio full test</span><span>75s</span><span>43s</span><span>IB helps compile slice</span>
           </div>
           <div class="row win" role="row">
-            <span>Rust</span><span>tokio after touch</span><span>Cargo 38s</span><span>IB 13s</span><span>best native-vs-IB proof</span>
+            <span>Rust</span><span>tokio after touch</span><span>Cargo 38s</span><span>IB 13s</span><span>clearest native-vs-IB contrast</span>
           </div>
           <div class="row maybe" role="row">
             <span>Java</span><span>Maven forked javac XL</span><span>15s</span><span>9s</span><span>selective candidate</span>
@@ -158,7 +200,7 @@
             <span>Docker</span><span>BuildKit control</span><span>11s</span><span>3s</span><span>use BuildKit cache</span>
           </div>
           <div class="row native" role="row">
-            <span>Docker</span><span>moby/buildkit warm retry</span><span>cold stream issue</span><span>2s warm</span><span>use a controlled BuildKit demo</span>
+            <span>Docker</span><span>moby/buildkit warm retry</span><span>cold stream issue</span><span>2s warm</span><span>use BuildKit cache</span>
           </div>
         </div>
       </section>
@@ -168,7 +210,7 @@
           <p class="eyebrow">decision</p>
           <h2>What should this workflow cache?</h2>
           <p>Pick the workload shape. The answer should change by ecosystem.</p>
-          <div class="controls" aria-label="cache decision controls">
+          <div class="controls" role="group" aria-label="cache decision controls">
             <label>
               Language
               <select id="language">
@@ -195,7 +237,7 @@
           <h3 id="verdictTitle">IB Build Cache</h3>
           <p id="verdictText">
             Heavy compiler work on a fresh C/C++ runner is the strongest measured
-            fit for Incredibuild Build Cache.
+            fit for Incredibuild Build Cache in this POC.
           </p>
         </aside>
       </section>
@@ -226,24 +268,24 @@
       </section>
 
       <section class="section final">
-        <p class="eyebrow">POC demo set</p>
-        <h2>Show three stories, not one claim.</h2>
-        <ol>
-          <li><b>C++ flagship:</b> DuckDB or RocksDB for the 18x restored-cache win.</li>
-          <li><b>Rust CI:</b> Tokio for fresh runner, full test, and touched-source variants.</li>
-          <li><b>Native-cache contrast:</b> Go and Docker to show when IB is not the right layer.</li>
-        </ol>
+        <p class="eyebrow">limits</p>
+        <h2>What this POC does not show</h2>
         <p>
-          Docker is now clearer: Alpine TLS no longer reproduces, BuildKit cache
-          works, and the remaining issue is the full upstream `moby/buildkit`
-          cold build hitting a stream error. Use a controlled app Dockerfile for
-          the Docker cache demo.
+          Go, JavaScript/TypeScript and Docker builds gained little or nothing
+          from Incredibuild here; use <code>GOCACHE</code>/<code>GOMODCACHE</code>,
+          tool-native caches and BuildKit. A cold build of upstream
+          <code>moby/buildkit</code> hit a BuildKit stream error, so the Docker
+          numbers use a small controlled Dockerfile.
         </p>
       </section>
     </main>
 
     <footer>
-      <span>MVP POC for CI cache strategy.</span>
+      <p class="credit">
+        By <a href="https://yossieliaz.netlify.app/">Yossi Eliaz</a>, Principal Engineer, AI Systems at
+        Incredibuild / islo.dev. Incredibuild Build Cache and Islo are my employer's products.
+        <a href="https://zozo123.github.io/">More writing</a>
+      </p>
       <a href="https://www.incredibuild.com/solutions/ci-cd-acceleration" target="_blank" rel="noreferrer">Incredibuild CI/CD acceleration</a>
       <a href="https://islo.dev" target="_blank" rel="noreferrer">islo.dev</a>
     </footer>

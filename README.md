@@ -1,6 +1,10 @@
 # CI Caching Is Not One Cache
 
-Concise MVP POC microsite comparing what to use when accelerating GitHub Actions:
+A one-page field guide from a June 2026 proof of concept by [Yossi Eliaz](https://zozo123.github.io/): which cache layer speeds up GitHub Actions on fresh, warm, or touched runners. Live page: https://zozo123.github.io/gha-cache-field-guide/
+
+Disclosure: Incredibuild Build Cache and Islo are products of my employer (Incredibuild / islo.dev). The timings on the page come from POC runs, not a controlled benchmark; runner details and logs are not published in this repo.
+
+It compares:
 
 - native dependency/build caches for already-warm state,
 - Incredibuild's proprietary Build Cache / CI-CD acceleration for fresh or dirty compiler work,
@@ -27,7 +31,7 @@ http://localhost:8080
 Push this repo to GitHub and enable Pages from the repository root, or serve the
 folder from any static host.
 
-## Message
+## Findings
 
 Native caches are best when the same workspace is already warm. Incredibuild
 Build Cache is strongest when GitHub Actions runners are fresh, ephemeral, or
@@ -38,10 +42,9 @@ This is not a universal "IB beats every cache" story. It is a practical
 comparison: C/C++ and Rust are strong Incredibuild candidates; Go, Docker, and
 JavaScript usually want native/tool-specific caches first.
 
-Docker note: BuildKit cache is the right Docker acceleration layer. Alpine TLS
-no longer reproduces in the Islo sandbox; the full upstream `moby/buildkit` cold
-Dockerfile still hits a BuildKit stream issue, so the demo should use a
-controlled app Dockerfile.
+Docker note: BuildKit cache is the right Docker acceleration layer. A cold build
+of the full upstream `moby/buildkit` Dockerfile hit a BuildKit stream error, so
+the Docker numbers use a small controlled Dockerfile.
 
 ## Links
 

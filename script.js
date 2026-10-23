@@ -5,14 +5,14 @@ const verdictText = document.querySelector("#verdictText");
 
 const matrix = {
   cpp: {
-    fresh: ["IB Build Cache", "Heavy C/C++ compiler graphs produced the largest measured wins: RocksDB 263s to 14s, DuckDB 293s to 16s."],
+    fresh: ["IB Build Cache", "Heavy C/C++ compiler graphs produced the largest wins in this POC: RocksDB 263s to 14s, DuckDB 293s to 16s."],
     warm: ["native object cache + IB", "If the workspace is truly warm, native object caches can help. For fresh CI, keep IB as the cross-run compiler artifact layer."],
     dirty: ["IB Build Cache", "Dirty timestamps are exactly where content-addressed compiler artifacts are useful."],
   },
   rust: {
-    fresh: ["IB Build Cache + Cargo registry", "Tokio moved 46s to 13s on a fresh restored runner. Keep dependency caches too."],
+    fresh: ["IB Build Cache + Cargo registry", "In this POC, Tokio went from 46s to 13s on a fresh runner with a restored IB cache. Keep dependency caches too."],
     warm: ["Cargo target cache", "If the same target directory is warm and unchanged, Cargo can be effectively instant."],
-    dirty: ["IB Build Cache", "Tokio after touch: Cargo warm took 38s, IB restored took 13s."],
+    dirty: ["IB Build Cache", "Tokio after touch in this POC: Cargo warm took 38s, IB restored took 13s."],
   },
   java: {
     fresh: ["Maven/Gradle cache first", "IB is selective. It looked positive only when Maven forked real javac on a large compile surface."],
@@ -21,7 +21,7 @@ const matrix = {
   },
   go: {
     fresh: ["GOCACHE + GOMODCACHE", "Go showed no target IB payload growth. Native Go cache is the correct acceleration layer."],
-    warm: ["GOCACHE", "The Go cache is designed for this; in our act run, native warm was effectively 0s."],
+    warm: ["GOCACHE", "The Go cache is designed for this; in the POC's nektos/act run, native warm was effectively 0s."],
     dirty: ["GOCACHE", "Go's content-aware native cache remains the first answer."],
   },
   js: {
